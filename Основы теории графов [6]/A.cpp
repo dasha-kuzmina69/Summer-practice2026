@@ -1,36 +1,53 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Функция для вычисления наибольшего общего делителя (НОД)
-// через алгоритм Евклида
-long long gcd(long long a, long long b) {
-    while (b != 0) {
-        long long temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
-
-// Функция для вычисления наименьшего общего кратного (НОК)
-// НОК(a, b) = a * b / НОД(a, b)
-long long lcm(long long a, long long b) {
-    return a / gcd(a, b) * b;  // Сначала делим, потом умножаем, чтобы избежать переполнения
-}
-
 int main() {
-    int n;
-    cin >> n;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     
-    long long result = 1;
+    int n, m, k;
+    cin >> n >> m >> k;
     
-    for (int i = 0; i < n; i++) {
-        long long t;
-        cin >> t;
-        result = lcm(result, t);  // Последовательно вычисляем НОК всех чисел
+    // Создаем список смежности для графа
+    vector<vector<int>> g(n + 1);
+    
+    // Читаем ребра
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        g[u].push_back(v);
+        g[v].push_back(u); // Граф неориентированный
     }
     
-    cout << result << endl;
+    // Вектор расстояний, изначально все -1 (недостижимы)
+    vector<int> dist(n + 1, -1);
+    
+    // Очередь для BFS
+    queue<int> q;
+    
+    // Начинаем с вершины k
+    dist[k] = 0;
+    q.push(k);
+    
+    // BFS
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        
+        // Перебираем всех соседей
+        for (int to : g[v]) {
+            if (dist[to] == -1) { // Если еще не посещали
+                dist[to] = dist[v] + 1;
+                q.push(to);
+            }
+        }
+    }
+    
+    // Выводим расстояния от 1 до n
+    for (int i = 1; i <= n; i++) {
+        cout << dist[i] << " ";
+    }
+    cout << "\n";
     
     return 0;
 }
